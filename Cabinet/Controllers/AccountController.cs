@@ -67,23 +67,18 @@ namespace Cabinet.Controllers
             {
                 return BadRequest(ModelState);
             }
-            try
+
+
+            if (!await _authManager.ValidateUser(user))
             {
-
-
-                if (!await _authManager.ValidateUser(user))
-                {
-                    return Unauthorized();
-                }
-
-
-                var response = new { Token = await _authManager.CreateToken() };
-                return Accepted(response);
+                return Unauthorized();
             }
-            catch
-            {
-                return Problem();
-            }
+
+
+            var response = new { Token = await _authManager.CreateToken() };
+            return Accepted(response);
+
+
         }
     }
 }

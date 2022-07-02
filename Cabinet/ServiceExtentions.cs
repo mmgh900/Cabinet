@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Cabinet
 {
-    public static class ServiceExtentions 
+    public static class ServiceExtentions
     {
         public static void ConfigureIdentity(this IServiceCollection services)
         {
@@ -18,22 +18,22 @@ namespace Cabinet
 
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                 .AddJwtBearer(options =>
                 {
                     var jwtSettings = configuration.GetSection("JwtSettings");
-                    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                        .AddJwtBearer(options =>
-                        {
-                            options.TokenValidationParameters = new TokenValidationParameters
-                            {
-                                ValidateIssuer = true,
-                                ValidateLifetime = true,
-                                ValidateIssuerSigningKey = true,
-                                ValidIssuer = jwtSettings["Issuer"],
-                                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
-                            };
-                        });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings["Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
+                    };
                 });
         }
     }

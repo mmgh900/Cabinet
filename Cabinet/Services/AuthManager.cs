@@ -32,7 +32,7 @@ namespace Cabinet.Services
         private JwtSecurityToken GetTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
             return new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("Jwt:Issuer"),
+                issuer: _configuration.GetValue<string>("JwtSettings:Issuer"),
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: signingCredentials
@@ -56,7 +56,8 @@ namespace Cabinet.Services
 
         private SigningCredentials GetSiginingCredentials()
         {
-            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SigningKey"]));
+            var key = _configuration["JwtSettings:SecretKey"];
+            var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             return signingCredentials;
 

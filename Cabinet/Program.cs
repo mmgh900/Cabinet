@@ -53,13 +53,15 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();
-builder.Services.ConfigureJwt(builder.Configuration);
+
 
 builder.Services.AddAuthorization(options =>
 {
     // By default, all incoming requests will be authorized according to the default policy.
     options.FallbackPolicy = options.DefaultPolicy;
 });
+
+builder.Services.ConfigureJwt(builder.Configuration);
 builder.Services.ConfigureIdentity();
 
 var app = builder.Build();

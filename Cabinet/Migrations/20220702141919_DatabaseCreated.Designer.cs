@@ -4,6 +4,7 @@ using Cabinet.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cabinet.Migrations
 {
     [DbContext(typeof(CabinetContext))]
-    partial class CabinetContextModelSnapshot : ModelSnapshot
+    [Migration("20220702141919_DatabaseCreated")]
+    partial class DatabaseCreated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,29 +225,6 @@ namespace Cabinet.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "47dc69d4-9f00-4c05-81fe-ef75c0867043",
-                            ConcurrencyStamp = "4e3489f9-28e3-48f1-9872-2149b73be3a1",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "fa3983e2-b102-4e2c-b6dc-a1a42930a63b",
-                            ConcurrencyStamp = "2cb2629f-a111-4c4c-bef6-d1ee81367a14",
-                            Name = "Driver",
-                            NormalizedName = "DRIVER"
-                        },
-                        new
-                        {
-                            Id = "4b1afbc3-cffc-4561-9c34-d96dc1ed0024",
-                            ConcurrencyStamp = "a0fb982d-489e-4005-91a3-82d2e8103729",
-                            Name = "Commuter",
-                            NormalizedName = "COMUTTER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

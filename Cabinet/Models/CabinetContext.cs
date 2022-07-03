@@ -13,10 +13,10 @@ public class CabinetContext : IdentityDbContext<CabinetUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         // To seed the database roles
         modelBuilder.ApplyConfiguration(new RoleConfiguration());
-
+        modelBuilder.ApplyConfiguration(new NeighborhoodConfiguration());
         modelBuilder.Entity<Commute>()
             .HasOne(c => c.Origin)
             .WithMany()

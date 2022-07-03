@@ -22,7 +22,7 @@ namespace Cabinet.Models.Configurations
                  new IdentityRole
                  {
                      Name = "Commuter",
-                     NormalizedName = "COMUTTER"
+                     NormalizedName = "COMMUTER"
                  }
             );
         }

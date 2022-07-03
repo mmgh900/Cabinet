@@ -15,9 +15,9 @@ namespace Cabinet.Models
         public List<Commute> DriverCommutes { get; set; }
 
         [InverseProperty("Commuter")]
-        public List<Commute> CommuterCommutes { get; set; }
+        public List<Commute>? CommuterCommutes { get; set; }
 
-        public List<Neighborhood> WorkingNeighborhoods { get; set; }
+        public List<Neighborhood>? WorkingNeighborhoods { get; set; }
         public bool IsBlocked { get; set; }
     }
 }

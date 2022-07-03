@@ -15,6 +15,7 @@ builder.Services.AddControllers();
 builder.Services.AddCors(o =>
 {
     o.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    o.AddPolicy("LcoalHsot3000", p => p.WithOrigins("http://localhost:3000").AllowCredentials().AllowAnyMethod().AllowAnyHeader());
 });
 
 var connectionString = builder.Configuration.GetConnectionString("LocalSQLServerCollection");
@@ -74,7 +75,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseCors("LcoalHsot3000");
 app.UseAuthentication();
 app.UseAuthorization();
 

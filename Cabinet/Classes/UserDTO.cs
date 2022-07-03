@@ -27,6 +27,8 @@ namespace Cabinet.Classes
         [Required]
         public string Role { get; set; }
 
+        public List<long>? Neighborhoods { get; set; }
+
 
     }
 }

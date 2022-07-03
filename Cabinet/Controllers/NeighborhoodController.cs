@@ -1,10 +1,11 @@
 using Cabinet.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cabinet.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class NeighborhoodController : ControllerBase
     {
@@ -17,6 +18,7 @@ namespace Cabinet.Controllers
 
         // GET: api/Neighborhood
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Neighborhood>>> GetNeighborhoods()
         {
             if (_context.Neighborhoods == null)

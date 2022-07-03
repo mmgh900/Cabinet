@@ -4,6 +4,7 @@ using Cabinet.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cabinet.Migrations
 {
     [DbContext(typeof(CabinetContext))]
-    partial class CabinetContextModelSnapshot : ModelSnapshot
+    [Migration("20220703072249_FixingCommuterSpelling")]
+    partial class FixingCommuterSpelling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -196,33 +198,6 @@ namespace Cabinet.Migrations
                     b.HasIndex("CabinetUserId");
 
                     b.ToTable("Neighborhoods");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Name = "Sanabad"
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Name = "Kolahdoz"
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Name = "Moalem"
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            Name = "Emam Reza"
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            Name = "Azadi"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -254,22 +229,22 @@ namespace Cabinet.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d00b92d0-3301-423e-9d76-e20fa5a3c172",
-                            ConcurrencyStamp = "34acaaa9-5a9f-45b8-bb23-15c7f5394be6",
+                            Id = "5bc981b5-c882-4869-94b5-529e7070e5ee",
+                            ConcurrencyStamp = "ac227d9b-c736-4441-8cd9-758cfdfb815e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "39924c72-97fc-42cb-a366-ee2843302a50",
-                            ConcurrencyStamp = "891207d8-539d-4856-b787-35416fbc88b5",
+                            Id = "f316f70e-af80-4257-85be-f2f9aebfcc67",
+                            ConcurrencyStamp = "c78ef8be-add0-44c2-990c-37856f919ffd",
                             Name = "Driver",
                             NormalizedName = "DRIVER"
                         },
                         new
                         {
-                            Id = "7718e1b1-f685-45ee-bfdb-3cd9f8cb9491",
-                            ConcurrencyStamp = "3f180033-263d-42b5-a56d-73b0637118be",
+                            Id = "124300d5-3e27-40ef-9487-9bc55b6399e1",
+                            ConcurrencyStamp = "f6d9b670-270f-4a9e-998b-0b3284945c99",
                             Name = "Commuter",
                             NormalizedName = "COMMUTER"
                         });

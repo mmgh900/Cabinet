@@ -34,6 +34,7 @@ namespace Cabinet.Services
             return new JwtSecurityToken(
                 issuer: _configuration.GetValue<string>("JwtSettings:Issuer"),
                 claims: claims,
+                audience: _configuration.GetValue<string>("JwtSettings:Audience"),
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: signingCredentials
             );

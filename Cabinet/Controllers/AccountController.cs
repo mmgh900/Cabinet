@@ -1,6 +1,7 @@
 ﻿using Cabinet.Classes;
 using Cabinet.Models;
 using Cabinet.Services;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -105,6 +106,63 @@ namespace Cabinet.Controllers
             return Accepted(response);
 
 
+        }
+
+
+
+        [HttpGet("{email}/profile")]
+        public async Task<IActionResult> GetUserProfile(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            var role = (await _userManager.GetRolesAsync(user))[0];
+            var u = await _db.Users.Where(u => u.Email == email || u.UserName == email).Select(u => new UserViewDTO
+            {
+                Email = u.Email,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Neighborhoods = u.WorkingNeighborhoods.Select(n => n.Name).ToList(),
+                NumberOfCommutes = role == "Commuter" ? u.CommuterCommutes.Count() : u.DriverCommutes.Count(),
+                PhoneNumber = u.PhoneNumber,
+                Role = role,
+                Score = role == "Commuter" ? u.CommuterCommutes.Select(c => c.Score).Average() : u.DriverCommutes.Select(c => c.Score).Average(),
+                IsBlocked = u.IsBlocked
+
+            }).FirstOrDefaultAsync();
+
+            if (u == null)
+            {
+                return NotFound();
+            }
+            return Ok(u);
+        }
+
+
+
+        [HttpGet("users")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetUsers()
+        {
+
+            return Ok(await _db.Users.Select(u => new
+            {
+                u.Email,
+                FullName = u.FirstName + " " + u.LastName,
+            }).ToListAsync());
+        }
+
+
+        [HttpPatch("{email}/block")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ToggleBlock(string email)
+        {
+            var user = _db.Users.Where(u => u.Email == email).FirstOrDefault();
+            if (user == null)
+            {
+                return NotFound();
+            }
+            user.IsBlocked = !user.IsBlocked;
+            await _db.SaveChangesAsync();
+            return Ok();
         }
     }
 }

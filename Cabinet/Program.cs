@@ -4,7 +4,9 @@ using Cabinet.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,18 +57,40 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IAuthManager, AuthManager>();
 
-
+builder.Services.AddAuthentication(o =>
+{
+    o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"],
+        ValidIssuer = jwtSettings["Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
+    };
+});
 builder.Services.AddAuthorization(options =>
 {
     // By default, all incoming requests will be authorized according to the default policy.
     options.FallbackPolicy = options.DefaultPolicy;
+
 });
 
-builder.Services.ConfigureJwt(builder.Configuration);
+
 builder.Services.ConfigureIdentity();
 
 var app = builder.Build();
-
+using (var scope = app.Services.CreateScope())
+{
+    await AdminCreator.CreateAdmin(scope.ServiceProvider);
+}
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

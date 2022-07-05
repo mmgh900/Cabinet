@@ -37,10 +37,6 @@ namespace Cabinet.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Location")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<long>("NeighborhoodId")
                         .HasColumnType("bigint");
 
@@ -139,14 +135,13 @@ namespace Cabinet.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("Cost")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("DateEnder")
+                    b.Property<DateTime?>("DateEnded")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateRequested")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<long>("DestinationId")
                         .HasColumnType("bigint");
@@ -157,11 +152,16 @@ namespace Cabinet.Migrations
                     b.Property<long>("OriginId")
                         .HasColumnType("bigint");
 
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
                     b.Property<int?>("Score")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -184,16 +184,11 @@ namespace Cabinet.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<string>("CabinetUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CabinetUserId");
 
                     b.ToTable("Neighborhoods");
 
@@ -225,6 +220,21 @@ namespace Cabinet.Migrations
                         });
                 });
 
+            modelBuilder.Entity("CabinetUserNeighborhood", b =>
+                {
+                    b.Property<string>("DriversId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<long>("WorkingNeighborhoodsId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("DriversId", "WorkingNeighborhoodsId");
+
+                    b.HasIndex("WorkingNeighborhoodsId");
+
+                    b.ToTable("CabinetUserNeighborhood");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -254,22 +264,22 @@ namespace Cabinet.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d00b92d0-3301-423e-9d76-e20fa5a3c172",
-                            ConcurrencyStamp = "34acaaa9-5a9f-45b8-bb23-15c7f5394be6",
+                            Id = "697e0606-5cdc-4f2e-a1be-ae67ca1e7a3a",
+                            ConcurrencyStamp = "4e9fc556-96ea-4dd9-a159-b795ba658253",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "39924c72-97fc-42cb-a366-ee2843302a50",
-                            ConcurrencyStamp = "891207d8-539d-4856-b787-35416fbc88b5",
+                            Id = "fc50a7a5-9156-4b87-b3d9-3d8b7cc54cfe",
+                            ConcurrencyStamp = "9a014434-e669-4bca-be15-89a3bd2bc1fa",
                             Name = "Driver",
                             NormalizedName = "DRIVER"
                         },
                         new
                         {
-                            Id = "7718e1b1-f685-45ee-bfdb-3cd9f8cb9491",
-                            ConcurrencyStamp = "3f180033-263d-42b5-a56d-73b0637118be",
+                            Id = "bc68cfe1-1d9a-467f-a9f5-1c6f58db3b94",
+                            ConcurrencyStamp = "a19b3b01-019f-4f1d-952a-437eda7f5a90",
                             Name = "Commuter",
                             NormalizedName = "COMMUTER"
                         });
@@ -388,7 +398,7 @@ namespace Cabinet.Migrations
                         .HasForeignKey("CabinetUserId");
 
                     b.HasOne("Cabinet.Models.Neighborhood", "Neighborhood")
-                        .WithMany()
+                        .WithMany("Addresses")
                         .HasForeignKey("NeighborhoodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -401,7 +411,7 @@ namespace Cabinet.Migrations
                     b.HasOne("Cabinet.Models.CabinetUser", "Commuter")
                         .WithMany("CommuterCommutes")
                         .HasForeignKey("CommuterId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Cabinet.Models.Address", "Destination")
@@ -412,7 +422,8 @@ namespace Cabinet.Migrations
 
                     b.HasOne("Cabinet.Models.CabinetUser", "Driver")
                         .WithMany("DriverCommutes")
-                        .HasForeignKey("DriverId");
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Cabinet.Models.Address", "Origin")
                         .WithMany()
@@ -429,11 +440,19 @@ namespace Cabinet.Migrations
                     b.Navigation("Origin");
                 });
 
-            modelBuilder.Entity("Cabinet.Models.Neighborhood", b =>
+            modelBuilder.Entity("CabinetUserNeighborhood", b =>
                 {
                     b.HasOne("Cabinet.Models.CabinetUser", null)
-                        .WithMany("WorkingNeighborhoods")
-                        .HasForeignKey("CabinetUserId");
+                        .WithMany()
+                        .HasForeignKey("DriversId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Cabinet.Models.Neighborhood", null)
+                        .WithMany()
+                        .HasForeignKey("WorkingNeighborhoodsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -494,8 +513,11 @@ namespace Cabinet.Migrations
                     b.Navigation("DriverCommutes");
 
                     b.Navigation("SavedAddresses");
+                });
 
-                    b.Navigation("WorkingNeighborhoods");
+            modelBuilder.Entity("Cabinet.Models.Neighborhood", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 #pragma warning restore 612, 618
         }

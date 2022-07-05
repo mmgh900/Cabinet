@@ -31,6 +31,8 @@ namespace Cabinet
                         ValidateIssuer = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
+                        ValidateAudience = true,
+                        ValidAudience = jwtSettings["Audience"],
                         ValidIssuer = jwtSettings["Issuer"],
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["SecretKey"]))
                     };

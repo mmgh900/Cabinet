@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Cabinet.Migrations
 {
-    public partial class DatabaseCreated : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -49,6 +49,19 @@ namespace Cabinet.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Neighborhoods",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Neighborhoods", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -158,25 +171,6 @@ namespace Cabinet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Neighborhoods",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CabinetUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Neighborhoods", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Neighborhoods_AspNetUsers_CabinetUserId",
-                        column: x => x.CabinetUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Addresses",
                 columns: table => new
                 {
@@ -184,7 +178,6 @@ namespace Cabinet.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NeighborhoodId = table.Column<long>(type: "bigint", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CabinetUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -204,19 +197,43 @@ namespace Cabinet.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CabinetUserNeighborhood",
+                columns: table => new
+                {
+                    DriversId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    WorkingNeighborhoodsId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CabinetUserNeighborhood", x => new { x.DriversId, x.WorkingNeighborhoodsId });
+                    table.ForeignKey(
+                        name: "FK_CabinetUserNeighborhood_AspNetUsers_DriversId",
+                        column: x => x.DriversId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CabinetUserNeighborhood_Neighborhoods_WorkingNeighborhoodsId",
+                        column: x => x.WorkingNeighborhoodsId,
+                        principalTable: "Neighborhoods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Commutes",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DateRequested = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateEnder = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateEnded = table.Column<DateTime>(type: "datetime2", nullable: true),
                     OriginId = table.Column<long>(type: "bigint", nullable: false),
                     DestinationId = table.Column<long>(type: "bigint", nullable: false),
-                    Cost = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false),
                     CommuterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: false),
+                    DriverId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     Score = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -236,13 +253,34 @@ namespace Cabinet.Migrations
                         name: "FK_Commutes_AspNetUsers_CommuterId",
                         column: x => x.CommuterId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Commutes_AspNetUsers_DriverId",
                         column: x => x.DriverId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "68b8a8ff-cd2c-4b8e-8627-8dac6213e53a", "55731a0e-5836-4dc2-a144-4a041c897577", "Commuter", "COMMUTER" },
+                    { "87a16a80-d7d1-454b-a3de-addec5cdcddc", "5f34b739-b25c-446e-964a-2e1e7f8782f7", "Driver", "DRIVER" },
+                    { "b4335456-5074-45f1-9a94-a61f157c3780", "06adcca3-82e5-493b-9e30-ed582f85185d", "Admin", "ADMIN" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Neighborhoods",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1L, "Sanabad" },
+                    { 2L, "Kolahdoz" },
+                    { 3L, "Moalem" },
+                    { 4L, "Emam Reza" },
+                    { 5L, "Azadi" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -295,6 +333,11 @@ namespace Cabinet.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CabinetUserNeighborhood_WorkingNeighborhoodsId",
+                table: "CabinetUserNeighborhood",
+                column: "WorkingNeighborhoodsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Commutes_CommuterId",
                 table: "Commutes",
                 column: "CommuterId");
@@ -313,11 +356,6 @@ namespace Cabinet.Migrations
                 name: "IX_Commutes_OriginId",
                 table: "Commutes",
                 column: "OriginId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Neighborhoods_CabinetUserId",
-                table: "Neighborhoods",
-                column: "CabinetUserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -338,6 +376,9 @@ namespace Cabinet.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "CabinetUserNeighborhood");
+
+            migrationBuilder.DropTable(
                 name: "Commutes");
 
             migrationBuilder.DropTable(
@@ -347,10 +388,10 @@ namespace Cabinet.Migrations
                 name: "Addresses");
 
             migrationBuilder.DropTable(
-                name: "Neighborhoods");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Neighborhoods");
         }
     }
 }

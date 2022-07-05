@@ -6,27 +6,23 @@ namespace Cabinet.Models;
 public class Commute
 {
     public long Id { get; set; }
-
     public DateTime DateRequested { get; set; }
 
-    public DateTime? DateEnder { get; set; }
+    public DateTime? DateEnded { get; set; }
+
+    public long OriginId { get; set; }
+    public virtual Address Origin { get; set; }
+
+    public long DestinationId { get; set; }
+    public virtual Address Destination { get; set; }
+
+    public float Price { get; set; }
+    public string CommuterId { get; set; }
+    public virtual CabinetUser Commuter { get; set; }
 
 
-    public Address Origin { get; set; }
-
-    
-    public Address Destination { get; set; }
-
-
-
-    public int Cost { get; set; }
-
-
-    public CabinetUser Commuter { get; set; }
-
-
-
-    public CabinetUser? Driver { get; set; }
+    public string? DriverId { get; set; }
+    public virtual CabinetUser? Driver { get; set; }
 
     public CommuteStatus Status { get; set; }
 
@@ -36,8 +32,9 @@ public class Commute
 
 public enum CommuteStatus
 {
-    WaitingForDriver,
-    InProgress,
-    WaitingForPayment,
-    Completed // Payed for
+    WaitingForDriver = 0,
+    InProgress = 1,
+    WaitingForPayment = 2,
+    Completed = 3, // Payed for,
+    Canceled = 4
 }
